@@ -40,7 +40,16 @@
   );
   $di->set(
     "packer",
-    "StabDex\\Utils\\Packer"
+    "StabDex\\Utils\\Packer",
+    true
+  );
+  $di->set(
+    "url",
+    function () {
+      $url = new Url();
+      $url->setBaseUri("/api/a1");
+      return $url;
+    }
   );
   $app = new Micro($di);
 
@@ -50,6 +59,7 @@
   $pokemons->setPrefix($app->config->url->pokemons);
   $pokemons->get("/", "getAll");
   $pokemons->get("/{name:[a-zA-Z\-]+}", "getName");
+  $pokemons->get("/{id:[0-9]+}", "getID");
   $app->mount($pokemons);
   
   $types = new MicroCollection();
