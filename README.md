@@ -1,14 +1,15 @@
 # StabDex API
 unfancy pokedex API for battle lovers
+
 # Philosophy
 Instead of providing a thorough and complete pokedex, StabDex trims down unnecessary information and retain only the bare minimum. However, this doesn't mean that StabDex is incomplete. On the contrary, it serves more complete information required in battles than most other dexes, from a type effectiveness chart to a very potent query engine. My goal is to provide a complete reference for people wanting to build their teams competitively.
 # Basic Features
 1. Powerful query engine: you can ask any question relating to battle. From "what's the most threatening pokemon to my team" to "how many pokemon builds out-sped my Garchomp". If my engine cannot answer a question you posted, then it is a BUG that ought to be fixed.
 2. Patching system: a signed-up power user can easily maintain their own copy of the dex through a patch. They could also release their patches to let others base on them. One can navigate to changes made easily by utilizing diff tools. This way, hack maintainers can make their edits readily visible to the public, as well as making it available to redistributed hackers.
 3. Usage statistic: any build used in a battle in the corresponding app (not yet available) will be recorded and available to be viewed by the public. This way, you can know what is truely popular and search for your way to counter. Better yet, you can ask a power user to patch a version to really nerf it! Statistics are stored in accordance to the patch version. So some OP PMs from a crazy hack will not affect vanilla stats.
+
 # Simple API Documentation
 This is currently the garbage ground for my api docs. Will move to somewhere more appropriate (i.e. wiki) later.
-
 prefix: /api/a1 (version 1 alpha)
 
 GET /pokemons : retrieve all pokemons in the database.
