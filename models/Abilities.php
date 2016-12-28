@@ -21,4 +21,13 @@
         ["alias" => "pokemonsWithHidden"]
       );
     }
+    
+    public function jsonSerialize() {
+      $di = $this->getDI();
+      $ready = [
+        "name" => $this->ability_name,
+        "url" => $di->get("url")->get($di->get("abilitiesEP") . "/" . $this->abid),
+      ];
+      return $ready;
+    }
   }

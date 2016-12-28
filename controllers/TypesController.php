@@ -10,9 +10,9 @@
       $types = Types::find(["order" => "tpid"]);
       $data = [];
       foreach($types as $type) {
-        $data[] = $this->packer->packType($type);
+        $data[] = $type->fullOffensive();
       }
-      return json_encode($data);
+      return json_encode($data,JSON_UNESCAPED_SLASHES);
     }
     
     function getName ($name) {

@@ -6,6 +6,8 @@
   use Phalcon\Mvc\Micro\Collection as MicroCollection;
   use Phalcon\Config\Adapter\Ini as ConfigIni;
   use Phalcon\Db\Adapter\Pdo\Mysql as MysqlAdapter;
+  use Phalcon\Db\Adapter\Pdo\Sqlite as SqliteAdapter;
+  use Phalcon\Mvc\Model\MetaData\Memory as MemoryMetaData;
   use Phalcon\Mvc\Url;
   
   $config = new ConfigIni("config/config.ini");
@@ -18,24 +20,34 @@
     ]
   )->register();
   $di = new FactoryDefault();
+  if ($config->database->engine == "mysql") {
+    $di->set(
+      "db",
+      function () use($config) {
+        return new MysqlAdapter(
+          [
+              "host"     => $config->database->host,
+              "username" => $config->database->username,
+              "password" => $config->database->password,
+              "dbname"   => $config->database->dbname,
+          ]
+        );
+      }
+    );
+  }
+  elseif ($config->database->engine == "sqlite") {
+    $di->set(
+      "db",
+      function () use($config) {
+        return new SqliteAdapter(['dbname' => $config->database->dbname]);
+      }
+    );
+  }
   $di->set(
-    "config",
-    function () use($config) {
-        return $config;
-    },
-    true
-  );
-  $di->set(
-    "db",
-    function () use($config) {
-      return new MysqlAdapter(
-        [
-            "host"     => $config->database->host,
-            "username" => $config->database->username,
-            "password" => $config->database->password,
-            "dbname"   => $config->database->dbname,
-        ]
-      );
+    "metadata",
+    function() {
+      $metadata = new MemoryMetaData();
+      return $metadata;
     }
   );
   $di->set(
@@ -44,27 +56,46 @@
     true
   );
   $di->set(
+    "stats",
+    "StabDex\\Utils\\Stats",
+    true
+  );
+  $di->set(
     "url",
     function () {
       $url = new Url();
-      $url->setBaseUri("/api/a1");
+      $api_root = substr(__DIR__, strlen($_SERVER["DOCUMENT_ROOT"]));
+      $url->setBaseUri($api_root);
       return $url;
     }
+  );
+  $di->set(
+    "pokemonsEP",
+    function () { return "/pokemons";}
+  );
+  $di->set(
+    "typesEP",
+    function () { return "/types";}
+  );
+  $di->set(
+    "abilitiesEP",
+    function () { return "/abilities";}
   );
   $app = new Micro($di);
 
   // Controller grouped routes.
   $pokemons = new MicroCollection();
   $pokemons->setHandler("StabDex\\Controllers\\PokemonsController", true);
-  $pokemons->setPrefix($app->config->url->pokemons);
+  $pokemons->setPrefix($di->get("pokemonsEP"));
   $pokemons->get("/", "getAll");
   $pokemons->get("/{name:[a-zA-Z\-]+}", "getName");
   $pokemons->get("/{id:[0-9]+}", "getID");
+  $pokemons->get("/summary/{stat:[a-zA-z_]+}", "getSummary");
   $app->mount($pokemons);
   
   $types = new MicroCollection();
   $types->setHandler("StabDex\\Controllers\\TypesController", true);
-  $types->setPrefix($app->config->url->types);
+  $types->setPrefix($di->get("typesEP"));
   $types->get("/", "getAll");
   $types->get("/{name:[a-zA-Z\-]+}", "getName");
   $app->mount($types);
@@ -74,7 +105,7 @@
     function () use ($app) {
       $app->response->setStatusCode(404, "Not Found");
       $app->response->sendHeaders();
-      echo "This is crazy, but this page was not found!";
+      echo "Sorry, no page found!";
     }
   );
   $app->get(

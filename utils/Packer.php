@@ -1,70 +1,21 @@
 <?php
-  namespace StabDex\Utils;  
-    
-  use Phalcon\Di\Injectable;
+  namespace StabDex\Utils;
   
   
-  class Packer extends Injectable {
-    public function packPM($pokemon) {
-      // generate types and abilities array.
-      $types = [];
-      foreach($pokemon->types as $type) {
-        $types[] = [
-         "Name" => $type->type_name,
-         "Url" => $this->url->get($this->config->url->types . "/" . $type->tpid)
-        ];
-      }
-      $abilities = [];
-      foreach($pokemon->normalAbilities as $ability) {
-        $abilities[] = [
-          "isHidden" => false,
-          "Name" => $ability->ability_name,
-          "Url" => $this->url->get($this->config->url->abilities . "/" . $ability->abid)
-        ];
-      }
-      $hidden_ab = $pokemon->hiddenAbilities->getFirst();
-      if ($hidden_ab) {
-        $abilities[] = [
-          "isHidden" => true,
-          "Name" => $hidden_ab->ability_name,
-          "Url" => $this->url->get($this->config->url->abilities . "/" . $hidden_ab->abid)
-        ];
-      }
-      $packed = [
-        "NID" => $pokemon->nid,
-        "Name" => $pokemon->pm_name,
-        "Url" => $this->url->get($this->config->url->pokemons . "/" . $pokemon->pmid),
-        "Height" => intval($pokemon->height),
-        "Weight" => intval($pokemon->weight),
-        "HP" => intval($pokemon->htp),
-        "Atk" => intval($pokemon->atk),
-        "Def" => intval($pokemon->def),
-        "SpAtk" => intval($pokemon->sak),
-        "SpDef" => intval($pokemon->sdf),
-        "Speed" => intval($pokemon->spd),
-        "Types" => $types,
-        "Abilities" => $abilities,
+  class Packer {
+    public function packPage($page, $limit, $urlBase) {
+      $output = [
+        "limit" => $limit,
+        "items" => $page->total_items,
+        "pages" => $page->total_pages,
+        "current" => $urlBase . "?limit=$limit&page=$page->current",
+        "first" => $urlBase . "?limit=$limit&page=1",
+        "previous" => $urlBase . "?limit=$limit&page=$page->before",
+        "next" => $urlBase . "?limit=$limit&page=$page->next",
+        "last" => $urlBase . "?limit=$limit&page=$page->last",
+        "data" => $page->items,
       ];
-      return $packed;
+      return $output;
     }
-    public function packType($type) {
-      $packed = [
-        "Name" => $type->type_name,
-        "Url" => $this->url->get($this->config->url->types . "/" . $type->tpid),
-        "SuperEffective" => $this->transType($type->superAgainst),
-        "NotEffective" => $this->transType($type->halfAgainst),
-        "NoEffect" => $this->transType($type->noEffectAgainst)
-      ];
-      return $packed;
-    }
-    
-    
-    
-    private function transType($tar) {
-      $data = [];
-      foreach($tar as $type) {
-        $data[] = ["Name" => $type->type_name];
-      }
-      return $data;
-    }
+
   }

@@ -65,4 +65,41 @@
         ["alias" => "immuneTo"]
       );
     }
+    
+    public function partial() {
+      $di = $this->getDI();
+      $output = [
+        "name" => $this->type_name,
+        "url" => $di->get("url")->get($di->get("typesEP") . "/$this->tpid"),
+      ];
+      return $output;
+    }
+    
+    public function fullOffensive() {
+      $di = $this->getDI();
+      $output = [
+        "name" => $this->type_name,
+        "url" => $di->get("url")->get($di->get("typesEP") . "/$this->tpid"),
+        "super_effective" => $this->superAgainst,
+        "not_effective" => $this->halfAgainst,
+        "no_effect" => $this->noEffectAgainst,
+      ];
+      return $output;
+    }
+    
+    public function fullDefensive() {
+      $di = $this->getDI();
+      $output = [
+        "name" => $this->type_name,
+        "url" => $di->get("url")->get($di->get("typesEP") . "/$this->tpid"),
+        "weaknesses" => $this->weakTo,
+        "resistances" => $this->resistantTo,
+        "immunities" => $this->immuneTo,
+      ];
+      return $output;      
+    }
+    
+    public function jsonSerialize() {
+      return $this->partial();
+    }
   }
