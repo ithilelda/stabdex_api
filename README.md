@@ -28,8 +28,18 @@ This is an expression only domain specific (mini) language. Grammar is represent
     equals = "=" | "!=";
     comparator = "<=" | ">=" | "<" | ">" | equals;
     separator = ";" | "|";
+    joiner = "," | "/";
     operand = identifier | number | "(", lhs, ")";
     lhs = operand, { operator, lhs };
-    rhs = number | identifier;
+    rhs = number | identifier, { joiner, identifier };
     expression = lhs, comparator, rhs | "(", clause, ")";
     clause = expression, { separator, clause };
+    
+The EBNF representation is constructed to be formal. For those who can't careless (including the lazy me), here are valid programs and explanations:
+
+    spd>=100 # you can have numbers in the right-hand-side.
+    tag=ou # and also identifiers.
+    tag=ou;type=grass|type=ghost # semicolon means AND. pipe means OR. This clause means give me all grass or ghost type pokemons in the OU tier. This will return Venusaur, Gengar, etc. Not just pokemons of grass/ghost dual type.
+    tag=ou,uber;type=grass/poison # comma is only used to join *named values* in the right-hand-side by UNION. Slash is the same but by INTERSECT. These are only added to save typing. INTERSECT *always* has higher precedence than UNION. so "type=grass/poison,ghost/poison" is valid. While "type=ou/uber,uu" is also valid, it is meaningless and returns nothing.
+    (tag=ou|tag=uber);type=grass;type=poison # exactly the same as above. Logic operators are *right associative*, so the first "|" is enclosed by parentheses. Otherwise, this would translate to "give me all pokemons that are in the uber tier with grass/poison dual typing. also return me all the pokemons in OU".
+    (spd+htp)/2<=100 # The best thing is that you can even do arithmetics in the left-hand-side with other identifiers and numbers. Better yet, parentheses are also available.
