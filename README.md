@@ -37,7 +37,7 @@ clause = expression, { separator, clause };
 ```
 
 The EBNF representation is constructed to be formal. For those who can't careless (including the lazy me), here are valid programs and explanations:
-```c
+```php
 spd>=100 # you can have numbers in the right-hand-side.
 tag=ou # and also identifiers.
 tag=ou;type=grass|type=ghost # semicolon means AND. pipe means OR. This clause means give me all grass or ghost type pokemons in the OU tier. This will return Venusaur, Gengar, etc. Not just pokemons of grass/ghost dual type.
