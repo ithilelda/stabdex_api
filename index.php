@@ -56,8 +56,8 @@
     true
   );
   $di->set(
-    "stats",
-    "StabDex\\Utils\\Stats",
+    "parser",
+    "StabDex\\Utils\\Parser",
     true
   );
   $di->set(
@@ -88,9 +88,9 @@
   $pokemons->setHandler("StabDex\\Controllers\\PokemonsController", true);
   $pokemons->setPrefix($di->get("pokemonsEP"));
   $pokemons->get("/", "getAll");
-  $pokemons->get("/{name:[a-zA-Z\-]+}", "getName");
-  $pokemons->get("/{id:[0-9]+}", "getID");
-  $pokemons->get("/summary/{stat:[a-zA-z_]+}", "getSummary");
+  $pokemons->get("/name/{name:[a-zA-Z\-]+}", "getName");
+  $pokemons->get("/pmid/{id:[0-9]+}", "getID");
+  $pokemons->get("/stats/{stat:height|weight|htp|atk|def|sak|sdf|spd|total}", "getStats");
   $app->mount($pokemons);
   
   $types = new MicroCollection();
@@ -98,6 +98,7 @@
   $types->setPrefix($di->get("typesEP"));
   $types->get("/", "getAll");
   $types->get("/{name:[a-zA-Z\-]+}", "getName");
+  $types->get("/{id:[0-9]+}", "getID");
   $app->mount($types);
   
   // some simple routes.
@@ -105,7 +106,9 @@
     function () use ($app) {
       $app->response->setStatusCode(404, "Not Found");
       $app->response->sendHeaders();
-      echo "Sorry, no page found!";
+      $uri = $app->request->getURI();
+      $query = $app->request->getQuery("filter");
+      echo "Sorry, \"$uri\" with \"$query\" was not found!";
     }
   );
   $app->get(

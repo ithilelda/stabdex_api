@@ -10,7 +10,7 @@
         "abid", "pmid",
         "StabDex\\Models\\Pokemons",
         "pmid",
-        ["alias" => "pokemonsWithNormal"]
+        ["alias" => "pokemonsWithNormal", "reusable" => true]
       );
       $this->hasManyToMany(
         "abid",
@@ -18,7 +18,7 @@
         "abid", "pmid",
         "StabDex\\Models\\Pokemons",
         "pmid",
-        ["alias" => "pokemonsWithHidden"]
+        ["alias" => "pokemonsWithHidden", "reusable" => true]
       );
     }
     

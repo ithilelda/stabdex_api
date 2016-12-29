@@ -3,16 +3,16 @@
   
   
   class Packer {
-    public function packPage($page, $limit, $urlBase) {
+    public function packPage($page, $url, $queries) {
       $output = [
-        "limit" => $limit,
+        "limit" => $queries["limit"],
         "items" => $page->total_items,
         "pages" => $page->total_pages,
-        "current" => $urlBase . "?limit=$limit&page=$page->current",
-        "first" => $urlBase . "?limit=$limit&page=1",
-        "previous" => $urlBase . "?limit=$limit&page=$page->before",
-        "next" => $urlBase . "?limit=$limit&page=$page->next",
-        "last" => $urlBase . "?limit=$limit&page=$page->last",
+        "current" => $url . "?" . http_build_query($queries) . "&page=$page->current",
+        "first" => $url . "?" . http_build_query($queries) . "&page=1",
+        "previous" => $url . http_build_query($queries) . "&page=$page->before",
+        "next" => $url . "?" . http_build_query($queries) . "&page=$page->next",
+        "last" => $url . "?" . http_build_query($queries) . "&page=$page->last",
         "data" => $page->items,
       ];
       return $output;

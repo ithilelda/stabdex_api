@@ -3,6 +3,11 @@
   use Phalcon\Mvc\Model;
 
   class Pokemons extends Model {
+    
+    public function getTotal() {
+      return $this->htp + $this->atk + $this->def + $this->sak + $this->sdf + $this->spd;
+    }
+    
     public function initialize() {
       $this->hasManyToMany(
         'pmid',
@@ -10,7 +15,7 @@
         'pmid', 'tpid',
         'StabDex\\Models\\Types',
         'tpid',
-        ["alias" => "types"]
+        ["alias" => "types", "reusable" => true]
       );
       $this->hasManyToMany(
         "pmid",
@@ -18,7 +23,7 @@
         "pmid", "abid",
         "StabDex\\Models\\Abilities",
         "abid",
-        ["alias" => "normalAbilities"]
+        ["alias" => "normalAbilities", "reusable" => true]
       );
       $this->hasManyToMany(
         "pmid",
@@ -26,7 +31,7 @@
         "pmid", "abid",
         "StabDex\\Models\\Abilities",
         "abid",
-        ["alias" => "hiddenAbilities"]
+        ["alias" => "hiddenAbilities", "reusable" => true]
       );
     }
     
@@ -36,15 +41,16 @@
       $ready = [
         "nid" => $this->nid,
         "name" => $this->pm_name,
-        "url" => $di->get("url")->get($di->get("pokemonsEP") . "/" . $this->pmid),
+        "url" => $di->get("url")->get($di->get("pokemonsEP") . "/id/" . $this->pmid),
         "height" => intval($this->height),
         "weight" => intval($this->weight),
-        "hp" => intval($this->htp),
+        "htp" => intval($this->htp),
         "atk" => intval($this->atk),
         "def" => intval($this->def),
-        "sp_atk" => intval($this->sak),
-        "sp_def" => intval($this->sdf),
-        "speed" => intval($this->spd),
+        "sak" => intval($this->sak),
+        "sdf" => intval($this->sdf),
+        "spd" => intval($this->spd),
+        "total" => $this->getTotal(),
         "types" => $this->types,
         "abilities" => $this->normalAbilities,
         "hidden_abilities" => $this->hiddenAbilities,

@@ -10,7 +10,7 @@
         'tpid', 'pmid',
         'StabDex\\Models\\Pokemons',
         'pmid',
-        ["alias" => "pokemons"]
+        ["alias" => "pokemons", "reusable" => true]
       );
       
       // super/weak relations using type_effects_double table.
