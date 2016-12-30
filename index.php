@@ -70,6 +70,10 @@
     }
   );
   $di->set(
+    "testsEP",
+    function () { return "/tests";}
+  );
+  $di->set(
     "pokemonsEP",
     function () { return "/pokemons";}
   );
@@ -84,6 +88,14 @@
   $app = new Micro($di);
 
   // Controller grouped routes.
+  $tests = new MicroCollection();
+  $tests->setHandler("StabDex\\Controllers\\TestsController", true);
+  $tests->setPrefix($di->get("testsEP"));
+  $tests->get("/lexer/url/{str}", "lexerTest1");
+  $tests->get("/lexer/query", "lexerTest2");
+  $tests->get("/lexer/loop", "lexerTest3");
+  $app->mount($tests);
+  
   $pokemons = new MicroCollection();
   $pokemons->setHandler("StabDex\\Controllers\\PokemonsController", true);
   $pokemons->setPrefix($di->get("pokemonsEP"));
@@ -107,8 +119,7 @@
       $app->response->setStatusCode(404, "Not Found");
       $app->response->sendHeaders();
       $uri = $app->request->getURI();
-      $query = $app->request->getQuery("filter");
-      echo "Sorry, \"$uri\" with \"$query\" was not found!";
+      echo "Sorry, \"$uri\" was not found!";
     }
   );
   $app->get(
