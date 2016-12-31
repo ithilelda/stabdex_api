@@ -20,13 +20,13 @@
     
     public function parse($filter) {
       $filters = explode(";", $filter);
+      if (count($filters) > 10) throw new \Exception("More than 10 expressions were provided in the filter string.");
       foreach($filters as $ex) {
         if (preg_match("/^(\w+)(<(?:=)?|>(?:=)?|=|!=)(\d+)/", $ex, $matches)) {
           $conditions[] = "$matches[1] $matches[2] $matches[3]";
         }
       }
       $condition = implode(" AND ", $conditions);
-      echo $condition;
       return array("conditions" => $condition);
     }
 

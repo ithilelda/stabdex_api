@@ -14,24 +14,32 @@
       $filter = $this->request->getQuery("filter");
       $supported_queries["limit"] = $limit;
       $filters = [];
-      if ($filter) {
-        $supported_queries["filter"] = $filter;
-        $filters = $this->packer->parse($filter);
+      try {
+        if ($filter) {
+          $supported_queries["filter"] = $filter;
+          $filters = $this->packer->parse($filter);
+        }
+        
+        $params = [
+          "models" => array("StabDex\\Models\\Pokemons"),
+          "order" => array("nid","pmid")
+        ];
+        $builder = $this->modelsManager->createBuilder(array_merge($params, $filters));
+        $paginator = new PaginatorQueryBuilder(
+          [
+            "builder" => $builder,
+            "limit" => $limit,
+            "page" => $page,
+          ]
+        );
+        $page = $paginator->getPaginate();
+        echo json_encode($this->packer->packPage($page, $this->url->get($this->pokemonsEP), $supported_queries), JSON_UNESCAPED_SLASHES);
       }
-      
-      $params = [
-        "models" => array("StabDex\\Models\\Pokemons"),
-        "order" => array("nid","pmid")
-      ];
-      $builder = $this->modelsManager->createBuilder(array_merge($params, $filters));
-      $paginator = new PaginatorQueryBuilder(
-        [
-          "builder" => $builder,
-          "limit" => $limit,
-          "page" => $page,
-        ]
-      );
-      echo json_encode($this->packer->packPage($paginator->getPaginate(), $this->url->get($this->pokemonsEP), $supported_queries), JSON_UNESCAPED_SLASHES);
+      catch (\Exception $e){
+        $this->response->setStatusCode(400, "Bad Request");
+        $this->response->sendHeaders();
+        echo $e->getMessage();
+      }
     }
     function getID($id) {
       $pm = Pokemons::findFirst("pmid = $id");
@@ -58,15 +66,8 @@
     
     function getStats($stat) {
       $pms = Pokemons::find();
-      if ($stat == "total") {
-        foreach ($pms as $pm) {
-          $data[] = ["pmid" => intval($pm->pmid), "data" => $pm->getTotal()];
-        }
-      }
-      else {
-        foreach ($pms as $pm) {
-          $data[] = ["pmid" => intval($pm->pmid), "data" => intval($pm->$stat)];
-        }
+      foreach ($pms as $pm) {
+        $data[] = ["pmid" => intval($pm->pmid), "data" => intval($pm->$stat)];
       }
       echo json_encode($data, JSON_UNESCAPED_SLASHES);
     }

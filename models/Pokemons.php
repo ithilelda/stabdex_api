@@ -4,10 +4,6 @@
 
   class Pokemons extends Model {
     
-    public function getTotal() {
-      return $this->htp + $this->atk + $this->def + $this->sak + $this->sdf + $this->spd;
-    }
-    
     public function initialize() {
       $this->hasManyToMany(
         'pmid',
@@ -50,7 +46,7 @@
         "sak" => intval($this->sak),
         "sdf" => intval($this->sdf),
         "spd" => intval($this->spd),
-        "total" => $this->getTotal(),
+        "total" => intval($this->total),
         "types" => $this->types,
         "abilities" => $this->normalAbilities,
         "hidden_abilities" => $this->hiddenAbilities,
