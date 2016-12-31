@@ -8,7 +8,7 @@
         "limit" => $queries["limit"],
         "items" => $page->total_items,
         "pages" => $page->total_pages,
-        "current" => $url . "?" . http_build_query($queries) . "&page=$page->current",
+        "current" => $page->current,
         "first" => $url . "?" . http_build_query($queries) . "&page=1",
         "previous" => $url . http_build_query($queries) . "&page=$page->before",
         "next" => $url . "?" . http_build_query($queries) . "&page=$page->next",
@@ -16,6 +16,18 @@
         "data" => $page->items,
       ];
       return $output;
+    }
+    
+    public function parse($filter) {
+      $filters = explode(";", $filter);
+      foreach($filters as $ex) {
+        if (preg_match("/^(\w+)(<(?:=)?|>(?:=)?|=|!=)(\d+)/", $ex, $matches)) {
+          $conditions[] = "$matches[1] $matches[2] $matches[3]";
+        }
+      }
+      $condition = implode(" AND ", $conditions);
+      echo $condition;
+      return array("conditions" => $condition);
     }
 
   }

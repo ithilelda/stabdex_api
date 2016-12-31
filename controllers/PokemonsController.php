@@ -16,7 +16,7 @@
       $filters = [];
       if ($filter) {
         $supported_queries["filter"] = $filter;
-        $filters = $this->parser->parse($filter);
+        $filters = $this->packer->parse($filter);
       }
       
       $params = [

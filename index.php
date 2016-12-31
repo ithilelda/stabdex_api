@@ -56,11 +56,6 @@
     true
   );
   $di->set(
-    "parser",
-    "StabDex\\Utils\\Parser",
-    true
-  );
-  $di->set(
     "url",
     function () {
       $url = new Url();
@@ -68,10 +63,6 @@
       $url->setBaseUri($api_root);
       return $url;
     }
-  );
-  $di->set(
-    "testsEP",
-    function () { return "/tests";}
   );
   $di->set(
     "pokemonsEP",
@@ -88,14 +79,6 @@
   $app = new Micro($di);
 
   // Controller grouped routes.
-  $tests = new MicroCollection();
-  $tests->setHandler("StabDex\\Controllers\\TestsController", true);
-  $tests->setPrefix($di->get("testsEP"));
-  $tests->get("/lexer/url/{str}", "lexerTest1");
-  $tests->get("/lexer/query", "lexerTest2");
-  $tests->get("/lexer/loop", "lexerTest3");
-  $app->mount($tests);
-  
   $pokemons = new MicroCollection();
   $pokemons->setHandler("StabDex\\Controllers\\PokemonsController", true);
   $pokemons->setPrefix($di->get("pokemonsEP"));
